@@ -1,10 +1,190 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Keyvan Kambakhsh</title>
-		<meta charset="utf-8"/>
-	</head>
-	<body>
-		Hello world!
-	</body>
+  <head>
+    <title>Keyvan Kambakhsh</title>
+    <meta charset="utf-8"/>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        outline: 0;
+      }
+      @keyframes flicker {
+        0% { opacity: 0; }
+        50% { opacity: 1; }
+        100% { opacity: 0; }
+      }
+      #console::after {
+        content: '_';
+        animation-duration: 0.8s;
+        animation-name: flicker;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+      }
+      ::-webkit-scrollbar {
+        width: 0 !important;
+      }
+      a, a:visited { color: yellow; }
+      #console {
+        overflow-y:scroll;
+        overflow-wrap: break;
+        word-break: break-all;
+        width:100vw;
+        height:100vh;
+        background-color:black;
+        color:white;
+        font-size:20px;
+        font-family: monospace;
+        padding-bottom: 20px;
+      }
+    </style>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://teletype.js.org/teletype.js"></script>
+    <script>
+      $(document).ready(function() {
+
+        var files = {
+          'home': {
+            'keyvan': {
+              'profile.txt': 'Name: Keyvan Kambakhsh<br>Birthday: 3 Feb. 1998<br>',
+              'skills.txt': `
+              <br><br>
+              <span style="display:block; text-align:center;">Upper-intermediate expertise in several programming languages:</span>
+              <span style="display:block;text-align:center;font-size:1.5em"><span style="color:orange;">C99</span>, <span style="color:lightblue;">C++11</span>, <span style="color:lightgreen;">C#</span>, </img><span style="color:cyan;">Python</span>, <span style="color:yellow;">JavaScript</span></span>
+              <br><br>
+              <span style="display:block; text-align:center;">My web technology stack:</span>
+              <span style="display:block;text-align:center;font-size:3em"><image style="height:1em;vertical-align:middle" src="python.png"/><image style="height:1em;vertical-align:middle" src="django.png"/><image style="height:1em;vertical-align:middle" src="postgresql.svg"/></span>
+              <br><br>
+              <span style="display:block; text-align:center;">See the open-source projects I've done on my:</span><span style="display:block;text-align:center;font-size:3em"><image style="height:1em;vertical-align:middle" src="github.png"></img></span>
+              <span style="display:block; text-align:center"><a href="https://github.com/keyvank">@keyvank</a> on GitHub</span>
+              <br><br>
+              <span style="display:block; text-align:center;">Upper-intermediate expertise in *nix operating systems.</span>
+              <span style="display:block; text-align:center;font-size:2em">#!/bin/bash</span>
+              `,
+              'readme.txt': 'Available commands: ls, cat, clear<br>'
+            }
+          }
+        };
+        $.get('photo.html', function(data) {
+          files['home']['keyvan']['photo.txt'] = data;
+        });
+
+        function setParents(path) {
+          for(file in path) {
+            if(file != '..' && file != '.') {
+              if(typeof (path[file]) === 'object') {
+                path[file]['..'] = path;
+                path[file]['!name'] = file;
+                path[file]['.'] = path[file];
+                setParents(path[file]);
+              }
+            }
+          }
+        }
+        setParents(files);
+
+        var homepath = files['home']['keyvan'];
+        var path = homepath;
+
+        function pwd(path) {
+          dirs = [];
+          tmp = path;
+          while('..' in tmp) {
+            dirs.push(tmp);
+            tmp = tmp['..'];
+          }
+          ret = ''
+          for(var i = dirs.length - 1; i >= 0; i--) {
+            ret+='/'+dirs[i]['!name'];
+          }
+          return ret;
+        }
+
+        var programs = {
+          'clear': function(args) {
+            console.clear();
+          },
+          'ls': function(args) {
+            if('.' in path)
+              console.printHTML('. ');
+            if('..' in path)
+              console.printHTML('.. ');
+            for(f in path) {
+              if(!f.startsWith('!') && f != '.' && f != '..')
+                console.printHTML(f+' ');
+            }
+            console.printHTML('<br>');
+          },
+          'cd': function(args) {
+            if(args[1] in path && typeof(path[args[1]]) === 'object') {
+              path = path[args[1]];
+            }
+            else {
+              console.printHTML('Directory does not exist!<br>');
+            }
+          },
+          'cat': function(args) {
+            if(args.length < 2)
+              console.printHTML('No file specified!<br>');
+            else
+              if(args[1] in path && typeof(path[args[1]])=='string')
+                console.printHTML(path[args[1]]);
+              else
+                console.printHTML('File does not exist!<br>');
+          },
+          'pwd': function() {
+            dir = pwd(path);
+            dir = (dir ? dir : '/');
+            console.printHTML(dir+'<br>');
+          },
+          'play': function() {
+            var audio = new Audio('hungarian-dance.mp3');
+            audio.play();
+          }
+        };
+        function prompt() {
+          var pt = pwd(path).replace(pwd(homepath), '~');
+          if(pt == '') pt = '/';
+          console.printText("root@keyvan:" + pt + "# ",'color:#83e771', {enable:true});
+        }
+
+        function get(file) {
+          if(file in path)
+            return path[file];
+          else
+            console.printHTML('File does not exist!<br>');
+        }
+
+        var console = new teletype(document.getElementById('console'), function(input) {
+          var tokens = input.split(' ');
+          if(tokens[0] in programs)
+            programs[tokens[0]](tokens);
+          else {
+            console.printHTML(tokens[0]+': command not found...<br>');
+            console.printHTML("Enter ");
+            console.printHTML('cat readme.txt', 'red');
+            console.printHTML(' for available commands!<br>');
+          }
+          prompt();
+        });
+
+        function print_delay(str) {
+          console.printHTML(str, {wait: 1000, delay:50});
+        }
+        print_delay("Hi! This is <i><b>Keyvan Kambakhsh</b></i>!<br><br>");
+        print_delay("I'm a <span style='color:magenta'>#computer_engineering</span> student currently persuing my B.Sc. in Shahid Beheshti University!<br>");
+        print_delay("I'm an upper-intermediate programmer, having the experience of creating stuff in several fields including Web Applications, Distributed Computing, Computer Graphics and Machine Learning.<br><br>");
+        print_delay("Contact me on <img src='telegram.png' style='height:1em;vertical-align:middle;'/>Telegram <a href='https://telegram.me/keyvankambakhsh'>@keyvankambakhsh</a> or send me an email <a href='mailto:keyvankambakhsh@gmail.com'>keyvankambakhsh@gmail.com</a><br><br>");
+        print_delay("Get started by running <span style='color:red'>cat readme.txt</span>! <br><br><br>");
+        prompt();
+      });
+
+    </script>
+  </head>
+  <body class="overflow:hidden">
+    <div id="console">
+    </div>
+  </body>
 </html>
