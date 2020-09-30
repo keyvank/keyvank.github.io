@@ -44,7 +44,7 @@
     <script src="https://teletype.js.org/teletype.js"></script>
     <script>
       $(document).ready(function() {
-
+        var state = 0;
         var files = {
           'home': {
             'keyvan': {
@@ -125,6 +125,9 @@
               console.printHTML('Directory does not exist!<br>');
             }
           },
+          'rm': function(args) {
+            console.printHTML('Don\'t even think about messing with my website -_-<br>');
+          },
           'cat': function(args) {
             if(args.length < 2)
               console.printHTML('No file specified!<br>');
@@ -140,6 +143,7 @@
             console.printHTML(dir+'<br>');
           },
           'play': function() {
+            if(state == 0) state = 1;
             var audio = new Audio('hungarian-dance.mp3');
             audio.play();
           }
@@ -163,22 +167,43 @@
             programs[tokens[0]](tokens);
           else {
             console.printHTML(tokens[0]+': command not found...<br>');
-            console.printHTML("Enter ");
-            console.printHTML('cat readme.txt', 'red');
-            console.printHTML(' for available commands!<br>');
+          }
+          if(state == 1) {
+            print_delay("Awesome! Let's wait till the music is loaded");
+            print_delay(".....", 500);
+            print_delay(" Alright!<br>")
+            print_delay("I'm a Software Engineer, graduated from <a href='https://en.wikipedia.org/wiki/Shahid_Beheshti_University'>Shahid Beheshti University</a>, currently living in <a href='https://en.wikipedia.org/wiki/Tehran'>Tehran/Iran</a>.<br>");
+            print_delay("I started programming when I was 12. Through all these years I built stuff in different fields of computer science, including <span style='color:orange'>Web Applications</span>, <span style='color:lightblue'>Distributed Computing</span>, <span style='color:lightgreen'>Computer Graphics</span>, <span style='color:cyan'>Cryptography</span>, <span style='color:lightpink'>GPU Programming</span> and etc.<br>");
+            print_delay("<br>I'm fascinated to show you some of my interesting projects, like: <br>")
+            print_delay("<br><img style='width:20%;display:block;align:center;margin:auto' src='tracy.jpg'/>");
+            print_delay("<div style='text-align:center;font-size:0.7em;margin:0.1em;'>This is the output of a strange shader of a software rasterizer I wrote from scratch, in C++</div><br>");
+            print_delay("I was one of the contributors of the <a href=''>#Filecoin</a> project. I helped them to accelerate their miners using GPUs.<br>");
+            print_delay("<br><span style='font-size:0.6em;'><i>(If you are curious how I built this, check out <a href='https://teletype.js.org'>teletype.js</a>!)</i></span><br>");
+            print_delay("<br>Okay! I think that's all! You can start playing with my command-line simulator!<br>");
+
+            state = 2;
           }
           prompt();
         });
 
-        function print_delay(str) {
-          console.printHTML(str, {wait: 1000, delay:50});
+        function print_delay(str,delay) {
+          if(!delay) delay = 50;
+          console.printHTML(str, {wait: 1000, delay: delay});
         }
-        print_delay("Hi! This is <i><b>Keyvan Kambakhsh</b></i>!<br><br>");
-        print_delay("I'm a <span style='color:magenta'>#computer_engineering</span> student currently persuing my B.Sc. in Shahid Beheshti University!<br>");
-        print_delay("I'm an upper-intermediate programmer, having the experience of creating stuff in several fields including Web Applications, Distributed Computing, Computer Graphics and Machine Learning.<br><br>");
-        print_delay("Contact me on <img src='telegram.png' style='height:1em;vertical-align:middle;'/>Telegram <a href='https://telegram.me/keyvankambakhsh'>@keyvankambakhsh</a> or send me an email <a href='mailto:keyvankambakhsh@gmail.com'>keyvankambakhsh@gmail.com</a><br><br>");
-        print_delay("Get started by running <span style='color:red'>cat readme.txt</span>! <br><br><br>");
+        print_delay("<br><div style='text-align:center'><span style='font-size:1.5em;line-height:1.3em;'>سلام/Hi/Hallo/Привет<img src='hand.png' style='height:1.3em;vertical-align:middle;'/> this is <i><b>Keyvan</b></i> :)!</span></div><br><br>",100);
+        print_delay("Before getting started, let's play some music! Write <span style='background-color:magenta'><i>> play</i></span> to begin!<br><br>");
         prompt();
+
+/*I enjoy learning new languages. Besides English, I hold a B1 certificate of German language and I'm also a big fan of Russian language.
+I love travelling and I'm trying hard to preserve the lifestyle of a Digital Nomad. I write a travel blog in Persian: https://matrushka.ir (Matryoshka are famous Russian dolls)
+
+");*/
+
+        //print_delay("I'm a <span style='color:magenta'>#computer_engineering</span> student currently persuing my B.Sc. in Shahid Beheshti University!<br>");
+        //print_delay("I'm an upper-intermediate programmer, having the experience of creating stuff in several fields including Web Applications, Distributed Computing, Computer Graphics and Machine Learning.<br><br>");
+        //print_delay("Contact me on <img src='telegram.png' style='height:1em;vertical-align:middle;'/>Telegram <a href='https://telegram.me/keyvankambakhsh'>@keyvankambakhsh</a> or send me an email <a href='mailto:keyvankambakhsh@gmail.com'>keyvankambakhsh@gmail.com</a><br><br>");
+        //print_delay("Get started by running <span style='color:red'>cat readme.txt</span>! <br><br><br>");
+
       });
 
     </script>
